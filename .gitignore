@@ -1,0 +1,32 @@
+# MATLAB junk
+*.asv
+*.m~
+*.mat
+profile_results*
+*.fig
+
+# Compiled MEX binaries
+*.mexa64
+*.mexw64
+*.mexmaci64
+
+# Data folders
+Sample_total/*
+Ref_total/*
+Calibration images/*
+
+# Output/results folders
+Results/
+results/
+output/
+outputs/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+
+# Keep README's
+!Sample_total/README.md
+!Ref_total/README.md
+!Calibration images/README.md
