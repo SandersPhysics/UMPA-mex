@@ -48,6 +48,9 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Updated `MEXbuilder.m` to use `script functions/mex_source/` as the canonical MEX source folder.
 - Updated `MEXbuilder.m` to build compiled MEX binaries into `script functions/mex_bin/<platform>/` so the outputs are found by the existing `script functions` path setup.
 - Updated Windows installation instructions to recommend installing the MATLAB-supported MinGW compiler through MATLAB Add-Ons.
+- Updated `numelements.m` to count only supported image files instead of all non-hidden files.
+- Updated `shiftloader.m` to load only supported image files and ignore non-image files such as `README.md`, `Thumbs.db`, `desktop.ini`, and hidden system files.
+- Updated image loading to sort files by name before loading for more consistent sample/reference ordering.
 
 ### Removed
 
@@ -72,6 +75,9 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Fixed project cleanup so the default MEX run, sandbox settings, and bias correction run work in the minimal Git test folder.
 - Fixed fresh-download MEX build failure caused by `MEXbuilder.m` looking for source files in the old root-level `mex_source/` folder.
 - Fixed fresh-download MEX path behavior so compiled binaries are generated inside the project function tree.
+- Fixed image count errors caused by placeholder files inside input image folders.
+- Fixed fresh-download runs where `README.md` files in `Sample_total/`, `Ref_total/`, or `Calibration images/` could be counted as data files.
+- Fixed potential sample/reference mismatch errors caused by non-image system files appearing in image folders.
 
 ### Current limitations
 
