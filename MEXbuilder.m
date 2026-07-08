@@ -15,10 +15,7 @@ ensure_folder(bin_dir);
 
 write_build_test_source(source_dir);
 
-openmp_args = { ...
-    'CXXFLAGS=$CXXFLAGS -fopenmp', ...
-    'LDFLAGS=$LDFLAGS -fopenmp' ...
-};
+openmp_args = get_openmp_args();
 
 targets = {
     struct( ...
@@ -64,6 +61,92 @@ else
     error('MEXbuilder:TestFailed', ...
         'build_test_mex failed: expected 42, got %.12g.', y);
 end
+
+end
+
+
+function openmp_args = get_openmp_args()
+%GET_OPENMP_ARGS Return platform-specific OpenMP MEX flags.
+
+if ismac
+    omp_prefix = find_mac_libomp();
+
+    omp_include = fullfile(omp_prefix, 'include');
+    omp_lib = fullfile(omp_prefix, 'lib');
+
+    if ~isfolder(omp_include)
+        error('MEXbuilder:MissingLibompInclude', ...
+            'Could not find libomp include folder: %s', omp_include);
+    end
+
+    if ~isfolder(omp_lib)
+        error('MEXbuilder:MissingLibompLib', ...
+            'Could not find libomp library folder: %s', omp_lib);
+    end
+
+    fprintf('\nmacOS OpenMP support:\n');
+    fprintf('  libomp folder: %s\n', omp_prefix);
+    fprintf('  include:       %s\n', omp_include);
+    fprintf('  lib:           %s\n', omp_lib);
+
+    openmp_args = { ...
+        ['CXXFLAGS=$CXXFLAGS -Xpreprocessor -fopenmp -I', omp_include], ...
+        ['LDFLAGS=$LDFLAGS -L', omp_lib, ' -lomp -Wl,-rpath,', omp_lib] ...
+    };
+
+else
+    fprintf('\nOpenMP support:\n');
+    fprintf('  Using standard -fopenmp compiler/linker flags.\n');
+
+    openmp_args = { ...
+        'CXXFLAGS=$CXXFLAGS -fopenmp', ...
+        'LDFLAGS=$LDFLAGS -fopenmp' ...
+    };
+end
+
+end
+
+
+function omp_prefix = find_mac_libomp()
+%FIND_MAC_LIBOMP Locate Homebrew libomp on macOS.
+
+[brew_status, ~] = system('command -v brew');
+
+if brew_status ~= 0
+    error('MEXbuilder:MissingHomebrew', ...
+        ['Homebrew is not installed or is not available on the MATLAB system path.' newline ...
+         'Install Homebrew first, then install libomp with:' newline newline ...
+         '  brew install libomp' newline newline ...
+         'After that, restart MATLAB and run MEXbuilder again.']);
+end
+
+[status, cmdout] = system('brew --prefix libomp');
+
+if status == 0
+    omp_prefix = strtrim(cmdout);
+
+    if isfolder(omp_prefix)
+        return
+    end
+end
+
+candidate_paths = { ...
+    '/opt/homebrew/opt/libomp', ...  % Apple Silicon Homebrew default
+    '/usr/local/opt/libomp' ...      % Intel Homebrew default
+};
+
+for k = 1:numel(candidate_paths)
+    if isfolder(candidate_paths{k})
+        omp_prefix = candidate_paths{k};
+        return
+    end
+end
+
+error('MEXbuilder:MissingLibomp', ...
+    ['OpenMP support on macOS requires Homebrew libomp.' newline ...
+     'Install it in Terminal with:' newline newline ...
+     '  brew install libomp' newline newline ...
+     'Then restart MATLAB and run MEXbuilder again.']);
 
 end
 
