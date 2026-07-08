@@ -109,26 +109,10 @@ end
 
 function omp_prefix = find_mac_libomp()
 %FIND_MAC_LIBOMP Locate Homebrew libomp on macOS.
-
-[brew_status, ~] = system('command -v brew');
-
-if brew_status ~= 0
-    error('MEXbuilder:MissingHomebrew', ...
-        ['Homebrew is not installed or is not available on the MATLAB system path.' newline ...
-         'Install Homebrew first, then install libomp with:' newline newline ...
-         '  brew install libomp' newline newline ...
-         'After that, restart MATLAB and run MEXbuilder again.']);
-end
-
-[status, cmdout] = system('brew --prefix libomp');
-
-if status == 0
-    omp_prefix = strtrim(cmdout);
-
-    if isfolder(omp_prefix)
-        return
-    end
-end
+%
+% MATLAB on macOS may not inherit the same PATH as Terminal, especially
+% when opened from Finder/Dock. Therefore, check standard Homebrew libomp
+% locations before relying on the brew command.
 
 candidate_paths = { ...
     '/opt/homebrew/opt/libomp', ...  % Apple Silicon Homebrew default
@@ -142,11 +126,32 @@ for k = 1:numel(candidate_paths)
     end
 end
 
+brew_commands = { ...
+    '/opt/homebrew/bin/brew --prefix libomp', ...
+    '/usr/local/bin/brew --prefix libomp', ...
+    'brew --prefix libomp' ...
+};
+
+for k = 1:numel(brew_commands)
+    [status, cmdout] = system(brew_commands{k});
+
+    if status == 0
+        omp_prefix = strtrim(cmdout);
+
+        if isfolder(omp_prefix)
+            return
+        end
+    end
+end
+
 error('MEXbuilder:MissingLibomp', ...
-    ['OpenMP support on macOS requires Homebrew libomp.' newline ...
-     'Install it in Terminal with:' newline newline ...
+    ['Could not find Homebrew libomp.' newline newline ...
+     'Open Terminal and run:' newline ...
      '  brew install libomp' newline newline ...
-     'Then restart MATLAB and run MEXbuilder again.']);
+     'Then restart MATLAB and run MEXbuilder again.' newline newline ...
+     'Expected libomp locations:' newline ...
+     '  /opt/homebrew/opt/libomp' newline ...
+     '  /usr/local/opt/libomp']);
 
 end
 
