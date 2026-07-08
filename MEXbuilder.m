@@ -4,9 +4,11 @@ function MEXbuilder()
 builder_file = mfilename('fullpath');
 builder_dir = fileparts(builder_file);
 
-source_dir = fullfile(builder_dir, 'mex_source');
-bin_root = fullfile(builder_dir, 'mex_bin');
-bin_dir = fullfile(bin_root, computer('arch'));
+root_dir = fileparts(mfilename('fullpath'));
+
+source_dir = fullfile(root_dir, 'script functions', 'mex_source');
+bin_root   = fullfile(root_dir, 'script functions', 'mex_bin');
+bin_dir    = fullfile(bin_root, computer('arch'));
 
 ensure_folder(source_dir);
 ensure_folder(bin_dir);

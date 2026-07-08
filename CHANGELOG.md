@@ -45,6 +45,9 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Replaced the older generic matrix-style subpixel helper workflow with fixed 3x3 direct quadratic-fit logic.
 - Simplified the live MEX build list to only the active compiled targets.
 - Moved bias correction and bias plotting helpers into the main `script functions/` path.
+- Updated `MEXbuilder.m` to use `script functions/mex_source/` as the canonical MEX source folder.
+- Updated `MEXbuilder.m` to build compiled MEX binaries into `script functions/mex_bin/<platform>/` so the outputs are found by the existing `script functions` path setup.
+- Updated Windows installation instructions to recommend installing the MATLAB-supported MinGW compiler through MATLAB Add-Ons.
 
 ### Removed
 
@@ -67,6 +70,8 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Fixed bias correction workflow so reference-vs-reference reconstruction can be run using the same selected UMPA core.
 - Fixed bias plotting syntax issue in `plot_umpa_bias_shifts.m`.
 - Fixed project cleanup so the default MEX run, sandbox settings, and bias correction run work in the minimal Git test folder.
+- Fixed fresh-download MEX build failure caused by `MEXbuilder.m` looking for source files in the old root-level `mex_source/` folder.
+- Fixed fresh-download MEX path behavior so compiled binaries are generated inside the project function tree.
 
 ### Current limitations
 

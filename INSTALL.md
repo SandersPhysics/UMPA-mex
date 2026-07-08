@@ -33,9 +33,20 @@ sudo apt update
 sudo apt install build-essential
 ```
 
-Windows users should install Microsoft Visual Studio Build Tools with the **Desktop development with C++** workload:
+Windows users should install the MATLAB-supported MinGW compiler through MATLAB:
 
-https://visualstudio.microsoft.com/downloads/
+1. Open MATLAB.
+2. Go to the **Home** tab.
+3. In the **Environment** section, select **Add-Ons**.
+4. Search for **MATLAB Support for MinGW-w64 C/C++/Fortran Compiler**.
+5. Install the add-on.
+6. Restart MATLAB.
+
+After installation, run:
+
+```matlab
+mex -setup cpp
+```
 
 macOS users should install Apple Xcode Command Line Tools:
 
