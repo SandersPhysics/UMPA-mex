@@ -48,15 +48,39 @@ After installation, run:
 mex -setup cpp
 ```
 
-macOS users should install Apple Xcode Command Line Tools:
+## macOS
 
-```bash
-xcode-select --install
-```
+The macOS MEX build requires Apple's C++ development tools. The required component is the **Xcode Command Line Tools**, which provides the Apple Clang++ compiler, macOS SDK, linker, and related build utilities.
 
-Apple developer tools are also available here:
+### Install Xcode
 
-https://developer.apple.com/xcode/resources/
+Open the **Mac App Store**, search for **Xcode** by Apple, and install it.
+
+The full Xcode download is large, but it provides the most straightforward setup for MATLAB MEX compilation.
+
+After installation:
+
+1. Open Xcode once.
+2. Accept the license agreement.
+3. Allow Xcode to install any requested additional components.
+4. Open **Xcode → Settings → Locations**.
+5. Under **Command Line Tools**, select the installed Xcode version.
+
+If Xcode is unavailable through the App Store, Apple also provides standalone **Command Line Tools for Xcode** installer packages through Apple Developer Downloads. An Apple Account is required, but paid Apple Developer Program membership is not required.
+
+### macOS compatibility
+
+The current macOS OpenMP build has been validated on:
+
+- Apple Silicon
+- MATLAB R2026a Update 1
+- `maca64`
+
+The builder is not hardcoded to R2026a. It derives its paths from the active MATLAB installation and architecture.
+
+Other MATLAB releases may work when they include the expected bundled OpenMP header and runtime. If those files are unavailable or stored differently, `MEXbuilder` will report the missing path.
+
+Intel Mac support has not yet been validated. MATLAB R2025b is the final MATLAB release available for Intel Macs.
 
 
 

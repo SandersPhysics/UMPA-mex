@@ -28,6 +28,9 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Added `apply_umpa_bias_correction.m`.
 - Added `plot_umpa_bias_shifts.m` for inspecting raw shifts and reference-bias shifts.
 - Added fixed display limits for bias shift inspection plots.
+- Added parallel macOS MEX support using MATLAB's bundled OpenMP header and runtime.
+- Added automatic detection of MATLAB's platform-specific `omp.h` and `libomp.dylib` paths.
+- Added support for Apple Silicon macOS MEX output through the `maca64` architecture folder.
 
 ### Changed
 
@@ -51,6 +54,11 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Updated `numelements.m` to count only supported image files instead of all non-hidden files.
 - Updated `shiftloader.m` to load only supported image files and ignore non-image files such as `README.md`, `Thumbs.db`, `desktop.ini`, and hidden system files.
 - Updated image loading to sort files by name before loading for more consistent sample/reference ordering.
+- Updated `MEXbuilder.m` to use platform-specific OpenMP compiler and linker flags.
+- Updated the macOS build path to compile with Xcode Clang using `-Xpreprocessor -fopenmp`.
+- Updated the macOS build path to link against MATLAB's bundled `libomp.dylib` instead of Homebrew `libomp`.
+- Removed Homebrew and external `libomp` as macOS build requirements.
+- Updated macOS OpenMP detection to derive paths from `matlabroot` and `computer('arch')`.
 
 ### Removed
 
@@ -78,6 +86,12 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - Fixed image count errors caused by placeholder files inside input image folders.
 - Fixed fresh-download runs where `README.md` files in `Sample_total/`, `Ref_total/`, or `Calibration images/` could be counted as data files.
 - Fixed potential sample/reference mismatch errors caused by non-image system files appearing in image folders.
+- Fixed macOS MEX compilation failure caused by passing the unsupported plain `-fopenmp` option to Apple Clang.
+- Fixed a macOS MATLAB crash caused by loading Homebrew `libomp` alongside MATLAB's existing OpenMP runtime.
+- Fixed duplicate OpenMP runtime initialization during execution of `image_cleanup_mex`.
+- Fixed MATLAB path visibility issues that previously prevented `MEXbuilder.m` from locating Homebrew installations.
+- Fixed generated `build_test_mex.cpp` source so its scalar-input comparison uses the C++ `!=` operator.
+- Fixed duplicated macOS OpenMP detection code that caused an illegal `end` syntax error in `MEXbuilder.m`.
 
 ### Current limitations
 
@@ -93,3 +107,5 @@ This release ports the lab-drive UMPA workflow into a cleaner Git-ready project 
 - The original MATLAB implementation is still retained through `umpa_core = 'original'`.
 - The C++/MEX backend is intended as a faster optional path, not a replacement for the MATLAB reference path.
 - Compiled MEX binaries are generated locally and should not be committed to Git.
+- macOS OpenMP/MEX support was validated on Apple Silicon with MATLAB R2026a Update 1.
+- Linux, Windows, and Apple Silicon macOS MEX builds have now been tested successfully.
